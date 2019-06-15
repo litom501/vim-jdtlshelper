@@ -1,0 +1,90 @@
+*jdtlshelper.txt*       Vim への Java 言語サーバ導入を支援するためのプラグイン
+
+Version: 0.1.0
+Auther : litom <litom501+vim@gmail.com>
+License: MIT License
+
+==============================================================================
+CONTENTS                                        *jdtlshelper-contents*
+
+
+Introduction                    |jdtlshelper-introduction|
+Usage                           |jdtlshelper-usage|
+Interface                       |jdtlshelper-interface|
+  Functions                       |jdtlshelper-functions|
+  Variables                       |jdtlshelper-variables|
+Changelog                       |jdtlshelper-changelog|
+
+==============================================================================
+INTRODUCTION                                    *jdtlshelper-introduction*
+
+*jdtlshelper* は Vim への Java 言語サーバの導入を支援するためのプラグインです。
+主に、配布モジュールの導入、更新そしてサーバー起動のための関数が用意されてい
+ます。
+
+==============================================================================
+USAGE                                           *jdtlshelper-usage*
+
+Java 言語サーバのインストール・更新方法
+        https://github.com/eclipse/eclipse.jdt.ls の最新モジュールをダウンロー
+        ドして展開します。
+>
+          call jdtlshelper#install()
+<
+
+サーバの起動方法
+        e.g. vim-lsp
+>
+        if executable('java')
+          augroup LspJava
+            autocmd!
+            autocmd User lsp_setup call lsp#register_server({
+              \ 'name': 'eclipse.jdt.ls',
+              \ 'cmd': {server_info -> jdtlshelper#get_server_command()},
+              \ 'root_uri':{server_info->lsp#utils#path_to_uri(
+              \               lsp#utils#find_nearest_parent_file_directory(
+              \                 lsp#utils#get_buffer_path(), 'pom.xml'))},
+              \ 'whitelist': ['java'],
+              \ })
+          augroup end
+        endif
+<
+==============================================================================
+INTERFACE                                       *jdtlshelper-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS                                       *jdtlshelper-functions*
+------------------------------------------------------------------------------
+jdtlshelper#install()                           *jdtlshelper#install()*
+        Java 言語サーバーをインストールディレクトリにインストールします。
+
+jdtlshelper#get_server_command()                *jdtlshelper#get_server_command()*
+        Java 言語サーバーを起動するためのコマンドを返します。
+
+VARIABLES                                       *jdtlshelper-variables*
+------------------------------------------------------------------------------
+*g:jdtlshelper#install_dir*
+        インストールディレクトリを指定します。
+        このディレクトリ直下の eclipse.jdt.ls にインストールモジュールが展開さ
+        れます。
+
+        デフォルト: ${XDG_CACHE_HOME}/tools または、 ~/.cache/tools
+
+*g:jdtlshelper#data_dir*
+        言語サーバーが使用するデータディレクトリです。
+        デフォルト: ${g:jdtlshelper#install_dir}/eclipse.jdt.ls-data
+
+*g:jdtlshelper#clean_data_dir*
+        サーバー起動時に、データディレクトリを作り直す場合 v:true
+        を指定します。
+
+        デフォルト: v:false
+
+Changelog                                       *jdtlshelper-changelog*
+------------------------------------------------------------------------------
+
+0.1.0   2019-06-15
+        - 初版
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+
