@@ -31,6 +31,9 @@ let s:jdt_ls_download_url = get(g:,'jdtlshelper#download_url', 'http://download.
 
 let s:jdt_ls_download_file = 'jdt-language-server.tar.gz'
 
+let s:curl_cmd = has('win32') ? 'curl.exe' : 'curl'
+let s:tar_cmd = has('win32') ? 'tar.exe' : 'tar'
+
 function! s:get_download_filepath() abort
   return s:install_path . '/' . s:jdt_ls_download_file
 endfunction
@@ -58,7 +61,7 @@ function! jdtlshelper#install() abort
   if filereadable(l:download_filepath)
     echo '[jdtlshelper] Checking for updates of eclipse.jdt.ls'
     execute 'silent! !echo [jdtlshelper] Checking for updates of eclipse.jdt.ls'
-    execute 'silent! !curl -f -L -z ' . l:download_filepath . ' -o ' . l:downloading_filepath . ' ' . s:jdt_ls_download_url
+    execute 'silent! !' . s:curl_cmd . ' -f -L -z ' . l:download_filepath . ' -o ' . l:downloading_filepath . ' ' . s:jdt_ls_download_url
     if v:shell_error
       echoerr '[jdtlshelper] error occurred during check new jdt language server.'
       return v:false
@@ -83,7 +86,7 @@ function! jdtlshelper#install() abort
       echomsg '[jdtlshelper] Create directory ''' . s:install_path . ''''
     endif
     execute 'silent! !echo [jdtlshelper] Downloading jdt language server'
-    execute 'silent! !curl -f -L -o ' . l:downloading_filepath . ' ' . s:jdt_ls_download_url
+    execute 'silent! !' . s:curl_cmd . ' -f -L -o ' . l:downloading_filepath . ' ' . s:jdt_ls_download_url
     if v:shell_error
       echoerr '[jdtlshelper] error occurred during download jdt langage server.'
       return 0
@@ -121,7 +124,7 @@ function! s:install_module(module_filepath, deploy_path) abort
 
   echo '[jdtlshelper] Extracting jdt language server.'
   execute 'silent! !echo [jdtlshelper] Extracting jdt language server.'
-  execute 'silent! !tar xf ' . a:module_filepath . ' -C ' . a:deploy_path
+  execute 'silent! !' . s:tar_cmd . ' xf ' . a:module_filepath . ' -C ' . a:deploy_path
   if v:shell_error
     echoerr '[jdtlshelper] error occurred during extract a install file.'
     return v:false
